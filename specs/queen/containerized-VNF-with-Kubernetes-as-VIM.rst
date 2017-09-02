@@ -10,37 +10,40 @@ Support containerized VNF with Kubernetes as VIM
 ================================================
 
 This proposal describes the plan to add Kubernetes as VIM in Tacker, so Tacker can support cloud native services
-through Kubernetes plugin. As 
+through Kubernetes plugin. OpenStack and Kubernetes will be used as VIMs for VM and Container based VNF respectively.
+The plan narrowly focus on basic life cycle of c-VNF in Tacker (CRUD).
 
 ::
 
-               +----------------------------------------+
-               |Tacker(NFVO/VNFM)                       |
-      +------+ |         +-------------------+          | +-----------+
-      | Heat +-----------+   Infra drivers   +------------> Kubernetes|
-      |      | |         |                   |          | |   Client  |
-      +------+ |         +-------------------+          | +-----------+
-          |    |                                        |        |
-          |    +----------------------------------------+        |
-          |                                                      |
-          |    +----------------------------------------+        |
-          |    |VIM                                     |        |
-          |    | +--------------+ +-------------------+ |        |
-          |    | |              | |                   | |        |
-          |    | |   OpenStack  | |    Kubernetes     <----------+
-          +------>(VM-based VNF)| |(Containerized VNF)| |
-               | |              | |                   | |
-               | +--------------+ +-------------------+ |
-               | +------------------------------------+ |
-               | |        Neutron network & Kuryr     | |
-               | +------------------------------------+ |
-               +----------------------------------------+
-               +----------------------------------------+
-               |                                        |
-               |                 Infrastructure         |
-               |                                        |
-               +----------------------------------------+
+					   +----------------------------------------+
+					   |Tacker(NFVO/VNFM)                       |
+			  +------+ |         +-------------------+          | +-----------+
+			  | Heat +-----------+   Infra drivers   +------------> Kubernetes|
+			  |      | |         |                   |          | |   Client  |
+			  +------+ |         +-------------------+          | +-----------+
+				  |    |                                        |        |
+				  |    +----------------------------------------+        |
+				  |                                                      |
+				  |    +----------------------------------------+        |
+				  |    |VIM                                     |        |
+				  |    | +--------------+ +-------------------+ |        |
+				  |    | |              | |                   | |        |
+				  |    | |   OpenStack  | |    Kubernetes     <----------+
+				  +------>(VM-based VNF)| |(Containerized VNF)| |
+					   | |              | |                   | |
+					   | +--------------+ +-------------------+ |
+					   | +------------------------------------+ |
+					   | |        Neutron network & Kuryr     | |
+					   | +------------------------------------+ |
+					   +----------------------------------------+
 
+					   +----------------------------------------+
+					   |                                        |
+					   |             Infrastructure             |
+					   |                                        |
+					   +----------------------------------------+
+
+					   
 
 Problem description
 ===================
@@ -60,7 +63,10 @@ Proposed change
 ===============
 
 This proposal is based on current status of available upstream projects (OpenStack, Kubernetes, Kuryr, etc) to support
-containerized VNF and mixing scenarios between container and VM  in VNFFG. 
+containerized VNF. To adaptive with the current environment in Tacker, kuryr-kubernetes will be used for networking
+between containers and VMs. Kubernetes can not creating SFC chainning between containerized VNFs, therefore creating
+VNFFG between VM-based and container-based VNFs should rely on OpenStack. Otherwise currently Tacker only support VNFFG
+in the same VIM. So this proposal will raise PoC, Kubernetes as sub VIM of the OpenStack VIM.
 
 
 
@@ -68,8 +74,28 @@ containerized VNF and mixing scenarios between container and VM  in VNFFG.
 
 Alternatives
 ------------
+There are some other options for implementing containerized VNF in Tacker.
 
+1. Magnum
 
+Magnum is a service to make COE such as Kubernetes, Docker Swarm, Apache Mesos. Considering Magnum will stitch containerized
+VNF as nested containers (Container inside VM). In this proposal, we abstract registering Kubernetes as VIM, therefore the
+Kubernetes clusters can be deployed on VMs (Magnum) or bare metals.
+
+2. Zun
+
+Zun could be used, but it is not mature at that time.
+
+3. Docker
+
+Directly use Dockerfile to create a VNF in Docker, but we can not limit the resources of each VNF by using Dockerfile.
+Otherwise, Docker only focus on CRUD container on each machine, we need the orchestration tools for scheduling and managing
+containers on multiple hosts.
+
+4. Multus-CNI
+
+For multiple networking in Kubernetes, Multus-CNI can be one solution. But currently Kuryr-Kubernetes doesn't support it. So
+Multus-CNI will be considered in the future.
 
 Data model impact
 -----------------
@@ -108,7 +134,9 @@ Implementation
 
 Assignee(s)
 -----------
+  Hoang Phuoc <hoangphuocbk2.07@gmail.com>
 
+  Janki Chhatbar <jchhatba@redhat.com>
 
 Work Items
 ----------
