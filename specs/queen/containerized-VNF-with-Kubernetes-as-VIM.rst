@@ -13,7 +13,7 @@ Disscusion document: [#first]_
 
 This proposal describes the plan to add Kubernetes as VIM in Tacker, so Tacker can support cloud native services
 through Kubernetes plugin. OpenStack and Kubernetes will be used as VIMs for VM and Container based VNF respectively.
-The plan narrowly focus on basic life cycle of c-VNF in Tacker (CRUD).
+The plan narrowly focuses on basic life cycle of c-VNF in Tacker (CRUD).
 
 .. code-block:: console
 
@@ -49,14 +49,14 @@ The plan narrowly focus on basic life cycle of c-VNF in Tacker (CRUD).
 Problem description
 ===================
 
-Currently Tacker only support OpenStack as VIM, that means VNFs are created as virtual machines. In some Telco
+Currently Tacker only supports OpenStack as VIM, that means VNFs are created as virtual machines. In some Telco
 scenario, virtualized network services need to quickly react with the change (updating, respawning from failure,
 scaling, migrating), VM-based VNF may not be a good solution. Instead, other solutions such as container should
 be used. Other hand, containerized VNFs are lightweight, small footprint and lower use of system resources, they
 improve operational efficiency and reduce operational costs.
 
 Kubernets is an open source system for automating deployment, scaling and management of containerized applications.
-Its strength provide scheduling/deploying a group of related containers, self-healing features by using service
+Its strength provides scheduling/deploying a group of related containers, self-healing features by using service
 discovery and continuous monitoring. Although it is not yet suitable for all VNF cases, it is one of the more mature
 container orchestration engine (COE). Currently, Kubernetes is chosen as COE in Container4NFV project (OPNFV) [#second]_. 
 
@@ -75,7 +75,7 @@ or storage technologies for container (Kubernetes) should be role of other proje
 
 There will be 2 options in VNF management:
 
-* New VNFM, that can be called as containerized VNFM. It seperates with the the old VNFM, because monitor, policy actions
+* New VNFM, that can be called as containerized VNFM. It separates out the the old VNFM, because monitor, policy actions
   and management drivers will be different in Kubernetes environment.
 
 * Add Kubernetes client [#third]_ as infra driver in the existing VNFM in Tacker.
@@ -85,18 +85,18 @@ There will be 2 options in VNF management:
 When apply Kubernetes as VIM, there will be 2 types of VNF, container-based and VM-based VNF. For now, Kubernetes can
 not create service function chainning (SFC) between containerized VNFs, therefore creating VNFFG should rely on OpenStack
 VIM. This proposal make changes and reuse networking-sfc feature to create SFC between VM-based and container-based VNFs,
-not only CRUD seperate c-VNF.
+not only CRUD separate c-VNF.
 
 4. Containerized VNF definition
 
-Currently, Tacker use  OASIS Tosca VNF standards to define VNF. Kubernetes environment use their template to define objects
+Currently, Tacker uses  OASIS Tosca VNF standards to define VNF. Kubernetes environment uses their template to define objects
 like pod, deployment, service, etc. Translating from Tosca template to Kubernetes template is needed when Kubernetes is
-choosed as VIM. In OPNFV, there are project Parser [#fourth]_, they intend to provide tosca2kube, but it is not completed for now. 
+chosen as VIM. In OPNFV, there are project Parser [#fourth]_, they intend to provide tosca2kube, but it is not completed for now. 
 
 
 Alternatives
 ------------
-There are some other options for implementing containerized VNF in Tacker.
+There are some other options of implementing containerized VNF in Tacker.
 
 1. Magnum
 
@@ -111,7 +111,7 @@ Zun could be used, but it is not mature at that time.
 3. Docker
 
 Directly use Dockerfile to create a VNF in Docker, but we can not limit the resources of each VNF by using Dockerfile.
-Otherwise, Docker only focus on CRUD container on each machine, we need the orchestration tools for scheduling and managing
+Otherwise, Docker only focuses on CRUD container on each machine, we need the orchestration tools for scheduling and managing
 containers on multiple hosts.
 
 4. Multus-CNI [#fifth]_
