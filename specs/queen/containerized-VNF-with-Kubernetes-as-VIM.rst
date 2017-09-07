@@ -8,40 +8,43 @@
 =================================================
 Support containerized VNF using Kubernetes as VIM
 =================================================
+Disscusion document: [#first]_
+
 
 This proposal describes the plan to add Kubernetes as VIM in Tacker, so Tacker can support cloud native services
 through Kubernetes plugin. OpenStack and Kubernetes will be used as VIMs for VM and Container based VNF respectively.
 The plan narrowly focus on basic life cycle of c-VNF in Tacker (CRUD).
 
-::
+.. code-block:: console
 
-				   +----------------------------------------+
-				   |Tacker(NFVO/VNFM)                       |
-			  +------+ |         +-------------------+          | +-----------+
-			  | Heat +-----------+   Infra drivers   +------------> Kubernetes|
-			  |client| |         |                   |          | |   Client  |
-			  +---+--+ |         +-------------------+          | +------+----+
-			      |    |                                        |        |
-			      |    +----------------------------------------+        |
-			      |                                                      |
-		   	      |    +----------------------------------------+        |
-			      |    |VIM                                     |        |
-		              |    | +--------------+ +-------------------+ |        |
-			      |    | |              | |                   | |        |
-			      |    | |   OpenStack  | |    Kubernetes     <----------+
-			      +------>(VM+based VNF)| |      clusters     | |
-		                   | |              | |(Containerized VNF)| |
-			           | +--------------+ +-------------------+ |
-			           | +------------------------------------+ |
-			           | |        Neutron network & Kuryr     | |
-			           | +------------------------------------+ |
-			           +----------------------------------------+
+                        +----------------------------------------+
+                        |Tacker(NFVO/VNFM)                       |
+               +------+ |         +-------------------+          | +-----------+
+               | Heat +-----------+   Infra drivers   +------------> Kubernetes|
+               |client| |         |                   |          | |   Client  |
+               +---+--+ |         +-------------------+          | +------+----+
+                   |    |                                        |        |
+                   |    +----------------------------------------+        |
+                   |                                                      |
+                   |    +----------------------------------------+        |
+                   |    |VIM                                     |        |
+                   |    | +--------------+ +-------------------+ |        |
+                   |    | |              | |                   | |        |
+                   |    | |   OpenStack  | |    Kubernetes     <----------+
+                   +------>(VM+based VNF)| |      clusters     | |
+                        | |              | |(Containerized VNF)| |
+                        | +--------------+ +-------------------+ |
+                        | +------------------------------------+ |
+                        | |        Neutron network & Kuryr     | |
+                        | +------------------------------------+ |
+                        +----------------------------------------+
 
-		                   +----------------------------------------+
-			           |                                        |
-			           |             Infrastructure             |
-			           |                                        |
-			           +----------------------------------------+
+                        +----------------------------------------+
+                        |                                        |
+                        |             Infrastructure             |
+                        |                                        |
+                        +----------------------------------------+
+
 		   
 Problem description
 ===================
@@ -55,7 +58,7 @@ improve operational efficiency and reduce operational costs.
 Kubernets is an open source system for automating deployment, scaling and management of containerized applications.
 Its strength provide scheduling/deploying a group of related containers, self-healing features by using service
 discovery and continuous monitoring. Although it is not yet suitable for all VNF cases, it is one of the more mature
-container orchestration engine (COE). Currently, Kubernetes is chosen as COE in Container4NFV[1] project (OPNFV). 
+container orchestration engine (COE). Currently, Kubernetes is chosen as COE in Container4NFV project (OPNFV) [#second]_. 
 
 Proposed change
 ===============
@@ -72,10 +75,10 @@ or storage technologies for container (Kubernetes) should be role of other proje
 
 There will be 2 options in VNF management:
 
-- New VNFM, that can be called as containerized VNFM. It seperates with the the old VNFM, because monitor, policy actions
-and management drivers will be different in Kubernetes environment.
+* New VNFM, that can be called as containerized VNFM. It seperates with the the old VNFM, because monitor, policy actions
+  and management drivers will be different in Kubernetes environment.
 
-- Add Kubernetes client as infra driver in the existing VNFM in Tacker.
+* Add Kubernetes client [#third]_ as infra driver in the existing VNFM in Tacker.
 
 3. VNF data-model changes
 
@@ -88,7 +91,7 @@ not only CRUD seperate c-VNF.
 
 Currently, Tacker use  OASIS Tosca VNF standards to define VNF. Kubernetes environment use their template to define objects
 like pod, deployment, service, etc. Translating from Tosca template to Kubernetes template is needed when Kubernetes is
-choosed as VIM. In OPNFV, there are project Parser[2], they intend to provide tosca2kube, but it is not completed for now. 
+choosed as VIM. In OPNFV, there are project Parser [#fourth]_, they intend to provide tosca2kube, but it is not completed for now. 
 
 
 Alternatives
@@ -111,10 +114,10 @@ Directly use Dockerfile to create a VNF in Docker, but we can not limit the reso
 Otherwise, Docker only focus on CRUD container on each machine, we need the orchestration tools for scheduling and managing
 containers on multiple hosts.
 
-4. Multus-CNI
+4. Multus-CNI [#fifth]_
 
 For multiple networking in Kubernetes, Multus-CNI can be one solution. But currently Kuryr-Kubernetes doesn't support it. So
-Multus-CNI will be considered in the future. Kubernetes also has plan for multiple networking[3].
+Multus-CNI will be considered in the future. Kubernetes also has plan for multiple networking [#sixth]_.
 
 Data model impact
 -----------------
@@ -179,7 +182,9 @@ Documentation Impact
 
 References
 ==========
-.. [#f1] https://wiki.opnfv.org/display/OpenRetriever/Container4NFV
-.. [#f2] https://wiki.opnfv.org/display/parser/Parser
-.. [#f3] https://docs.google.com/document/d/1TW3P4c8auWwYy-w_5afIPDcGNLK3LZf0m14943eVfVg/edit?ts=58877ea7#
-.. [#f4] https://docs.google.com/document/d/1zhJxoMc-_nFop8q2aB2mSjXZ_bjMQq1Ju9_P9ppV_Vo/edit#
+.. [#first] https://docs.google.com/document/d/1zhJxoMc-_nFop8q2aB2mSjXZ_bjMQq1Ju9_P9ppV_Vo/edit#
+.. [#second] https://wiki.opnfv.org/display/OpenRetriever/Container4NFV
+.. [#third] https://github.com/kubernetes-incubator/client-python
+.. [#fourth] https://wiki.opnfv.org/display/parser/Parser
+.. [#fifth] https://github.com/Intel-Corp/multus-cni
+.. [#sixth] https://docs.google.com/document/d/1TW3P4c8auWwYy-w_5afIPDcGNLK3LZf0m14943eVfVg/edit?ts=58877ea7#
